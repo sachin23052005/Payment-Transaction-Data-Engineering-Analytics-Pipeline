@@ -1,0 +1,20 @@
+EXPECTED MAIN PIPELINE RESULT
+
+Raw records       : 13
+Unique records    : 12
+Duplicates        : 1
+Valid records     : 10
+Rejected records  : 2
+
+Rejected records:
+- T1003 -> non_positive_amount
+- T1011 -> missing_customer_id
+
+Successful transaction value:
+4500 + 120 + 22000 + 700 + 3000 + 12500 + 250 + 500 = 43570 INR
+
+Failed transaction count:
+2
+
+Total valid transactions:
+10
