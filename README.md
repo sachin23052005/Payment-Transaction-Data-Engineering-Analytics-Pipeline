@@ -14,7 +14,7 @@ The pipeline starts with transaction data exposed through a REST API, consumes t
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 Modern payment systems generate large volumes of transaction data that must be:
 
@@ -33,7 +33,7 @@ The main objective is to demonstrate how different data engineering components w
 
 ---
 
-# 🏗️ Architecture
+# Architecture
 
 ```text
                          PAYMENT TRANSACTION PIPELINE
@@ -109,7 +109,7 @@ The main objective is to demonstrate how different data engineering components w
 
 ---
 
-# 🔄 End-to-End Data Flow
+# End-to-End Data Flow
 
 ```text
 REST API
@@ -133,7 +133,7 @@ SQL Analytics
 
 ---
 
-# 🚀 Key Features
+# Key Features
 
 ## 1. REST API
 
@@ -534,7 +534,7 @@ Docker also avoids the need to configure a complete local Hadoop environment on 
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 ```text
 payment-data-pipeline/
@@ -573,7 +573,7 @@ payment-data-pipeline/
 
 ---
 
-# 🛠️ Technology Stack
+# Technology Stack
 
 | Technology | Role |
 |---|---|
@@ -591,7 +591,7 @@ payment-data-pipeline/
 
 ---
 
-# 💻 Installation & Setup
+# Installation & Setup
 
 ## Prerequisites
 
@@ -621,7 +621,7 @@ docker compose version
 
 ---
 
-# ⚙️ Setup
+# Setup
 
 ## 1. Clone the repository
 
@@ -665,7 +665,7 @@ pip install -r requirements.txt
 
 ---
 
-# 🐳 Start Docker Services
+# Start Docker Services
 
 From the project root:
 
@@ -688,7 +688,7 @@ payment-spark
 
 ---
 
-# ▶️ Running the Complete Pipeline
+# ▶Running the Complete Pipeline
 
 The pipeline should be executed in the following order.
 
@@ -813,7 +813,7 @@ Expected:
 
 ---
 
-# 📊 Verified Pipeline Results
+# Verified Pipeline Results
 
 The current implementation has been executed successfully with the following results:
 
@@ -850,7 +850,7 @@ PostgreSQL
 
 ---
 
-# 🔍 Data Quality Example
+#  Data Quality Example
 
 The pipeline demonstrates a basic data-quality workflow:
 
@@ -883,7 +883,7 @@ This prevents invalid and duplicate data from directly entering the analytical d
 
 ---
 
-# 🧪 Testing Strategy
+# Testing Strategy
 
 The project uses automated tests to validate expected behavior.
 
@@ -903,7 +903,7 @@ The testing layer provides a safety net when modifying ingestion, validation, or
 
 ---
 
-# 🐞 Debugging
+# Debugging
 
 When troubleshooting the project, useful commands include:
 
