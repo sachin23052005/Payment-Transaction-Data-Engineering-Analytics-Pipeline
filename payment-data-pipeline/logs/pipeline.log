@@ -1,0 +1,9 @@
+2026-08-31 15:31:50,038 | INFO | Pipeline started
+2026-08-31 15:31:50,038 | INFO | Reading raw transactions from C:\sachin\PYTHON\payment-data-pipeline\data\raw\transactions.csv
+2026-08-31 15:31:50,079 | INFO | Pipeline completed | raw=13 unique=12 duplicates=1 valid=10 invalid=2
+2026-08-31 15:59:17,043 | INFO | Pipeline started
+2026-08-31 15:59:17,043 | INFO | Reading raw transactions from C:\sachin\PYTHON\payment-data-pipeline\data\raw\transactions.csv
+2026-08-31 15:59:17,119 | INFO | Pipeline completed | raw=13 unique=12 duplicates=1 valid=10 invalid=2
+2026-08-31 16:17:44,929 | INFO | Pipeline started
+2026-08-31 16:17:44,929 | INFO | Reading raw transactions from C:\sachin\PYTHON\payment-data-pipeline\data\raw\api_transactions.csv
+2026-08-31 16:17:44,985 | INFO | Pipeline completed | raw=13 unique=12 duplicates=1 valid=10 invalid=2

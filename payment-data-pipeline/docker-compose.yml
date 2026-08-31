@@ -1,0 +1,25 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: payment-postgres
+    environment:
+      POSTGRES_DB: payments
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  spark:
+    image: apache/spark:3.5.9
+    container_name: payment-spark
+    volumes:
+      - ./data:/opt/project/data
+      - ./src:/opt/project/src
+    working_dir: /opt/project
+    command: tail -f /dev/null
+
+volumes:
+  postgres_data:

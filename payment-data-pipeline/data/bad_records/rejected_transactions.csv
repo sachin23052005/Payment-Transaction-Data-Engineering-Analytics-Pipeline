@@ -1,0 +1,3 @@
+amount,currency,customer_id,location,merchant_id,payment_method,status,timestamp,transaction_id,rejection_reason
+-50,INR,C103,Delhi,M503,CARD,SUCCESS,2026-08-31 10:36:00,T1003,non_positive_amount
+900,INR,,Pune,M507,CARD,SUCCESS,2026-08-31 10:53:00,T1011,missing_customer_id
