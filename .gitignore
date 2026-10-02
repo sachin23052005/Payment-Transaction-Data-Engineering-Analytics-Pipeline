@@ -1,5 +1,33 @@
+# Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+
+# Pytest
 .pytest_cache/
+
+# Virtual environment
 .venv/
-logs/*.log
+venv/
+
+# Logs
+logs/
+*.log
+
+# Temporary error/debug files
+loader_error.txt
+
+# Local database
+data/transactions.db
+
+# Generated data
+data/processed/
+data/bad_records/
+
+# API-generated raw data
+data/raw/api_transactions.csv
+
+# Large generated dataset
+data/raw/transactions_1m.csv
+
+# Spark / Parquet generated files
+*.parquet
