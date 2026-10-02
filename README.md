@@ -1,115 +1,80 @@
 # Payment Transaction Data Engineering & Analytics Pipeline
-
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![PySpark](https://img.shields.io/badge/PySpark-3.5.9-orange)](https://spark.apache.org/docs/latest/api/python/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED)](https://www.docker.com/)
 [![PyTest](https://img.shields.io/badge/PyTest-4%20Passed-green)](https://pytest.org/)
 
-An end-to-end data engineering pipeline for ingesting, validating, transforming, storing, and analyzing payment transaction data.
+An end-to-end data engineering project for ingesting, validating, transforming, storing, and analyzing payment transaction data.
 
-The project demonstrates a practical data engineering workflow using **Python, Flask REST APIs, Requests, PySpark, PostgreSQL, SQL, Docker, PyTest, structured logging, and Git**.
+The project demonstrates two complementary data-processing workflows:
 
-The pipeline starts with transaction data exposed through a REST API, consumes the data using Python, performs data-quality validation and duplicate detection, processes the data using PySpark, and stores the final validated dataset in PostgreSQL for analytical queries.
+1. A **Python + Flask REST API pipeline** for API-based ingestion, validation, duplicate detection, transformation, and PostgreSQL loading.
+2. A **large-scale PySpark pipeline** for processing a 1-million-row transaction dataset, performing ETL, storing processed data in Parquet, loading it into PostgreSQL using Spark JDBC, and performing SQL-based analytics.
+
+The project uses **Python, Flask, PySpark, Apache Spark, PostgreSQL, SQL, Docker, Parquet, JDBC, PyTest, and Git**.
 
 ---
 
 ## Project Overview
 
-Modern payment systems generate large volumes of transaction data that must be:
+Payment transaction systems generate large volumes of transactional data that need to be cleaned, validated, transformed, stored, and analyzed reliably.
 
-- Ingested reliably
-- Validated for data quality
-- Checked for duplicate records
-- Transformed into a usable format
-- Stored persistently
-- Tested automatically
-- Made available for analytical use cases
-- Logged for debugging and operational visibility
+This project implements a complete data engineering workflow for payment transaction data.
 
-This project simulates such a workflow on a smaller scale while keeping the architecture close to a practical data engineering pipeline.
+The primary large-scale pipeline processes approximately **1 million transaction records** using Apache Spark and performs:
 
-The main objective is to demonstrate how different data engineering components work together as a complete pipeline rather than as isolated scripts.
+- CSV ingestion
+- Data cleaning
+- Data validation
+- Duplicate detection
+- Transaction transformation
+- Feature generation
+- Parquet storage
+- PostgreSQL loading using Spark JDBC
+- SQL-based analytics
+
+The project also contains a smaller Flask-based REST API pipeline that demonstrates API ingestion and traditional Python-based data processing.
 
 ---
 
-# Architecture
+## Architecture
+
+The project contains two complementary pipelines.
 
 ```text
-                         PAYMENT TRANSACTION PIPELINE
-
-                              ┌───────────────┐
-                              │ Transaction   │
-                              │ Raw Dataset   │
-                              └───────┬───────┘
-                                      │
-                                      ▼
-                              ┌───────────────┐
-                              │   Flask REST  │
-                              │      API      │
-                              │               │
-                              │ /health       │
-                              │ /transactions │
-                              └───────┬───────┘
-                                      │
-                                      ▼
-                              ┌───────────────┐
-                              │ Python API    │
-                              │   Ingestion   │
-                              │   Requests    │
-                              └───────┬───────┘
-                                      │
-                                      ▼
-                         ┌─────────────────────────┐
-                         │ api_transactions.csv   │
-                         │      Raw API Data      │
-                         └────────────┬────────────┘
-                                      │
-                                      ▼
-                         ┌─────────────────────────┐
-                         │ Data Validation &       │
-                         │ Duplicate Detection     │
-                         └────────────┬────────────┘
-                                      │
-                         ┌────────────┴────────────┐
-                         ▼                         ▼
-                  Valid Records             Rejected Records
-                         │                         │
-                         ▼                         ▼
-                  ┌─────────────┐          ┌──────────────┐
-                  │   PySpark   │          │ bad_records/ │
-                  │     ETL     │          └──────────────┘
-                  └──────┬──────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │ PostgreSQL  │
-                  │  Database   │
-                  └──────┬──────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │ SQL         │
-                  │ Analytics   │
-                  └─────────────┘
-
-
-          ┌────────────┐
-          │   PyTest   │ → Automated Testing
-          └────────────┘
-
-          ┌────────────┐
-          │  Logging   │ → Debugging & Monitoring
-          └────────────┘
-
-          ┌────────────┐
-          │   Docker   │ → Spark + PostgreSQL Infrastructure
-          └────────────┘
+                         PAYMENT TRANSACTION DATA
+                                  │
+                 ┌────────────────┴────────────────┐
+                 │                                 │
+          REST API Pipeline                 Large-Scale Pipeline
+                 │                                 │
+             Flask API                         1M-row CSV
+                 │                                 │
+          API Ingestion                         PySpark
+                 │                                 │
+          Raw CSV Data                  Cleaning & Validation
+                 │                                 │
+           Validation                    Deduplication
+                 │                                 │
+          Transformation                 Transformation
+                 │                                 │
+             PySpark                          Parquet
+                 │                                 │
+                 │                           Spark JDBC
+                 │                                 │
+                 └───────────────┬─────────────────┘
+                                 │
+                            PostgreSQL
+                                 │
+                           SQL Analytics
 ```
 
 ---
 
-# End-to-End Data Flow
+## End-to-End Data Flow
+
+### Original API-Based Pipeline
 
 ```text
 REST API
@@ -131,15 +96,53 @@ PostgreSQL
 SQL Analytics
 ```
 
+### Large-Scale Spark Pipeline
+
+```text
+1,000,000-row CSV
+        ↓
+     PySpark
+        ↓
+Data Cleaning & Validation
+        ↓
+   Deduplication
+        ↓
+   Transformation
+        ↓
+      Parquet
+        ↓
+   Spark JDBC
+        ↓
+   PostgreSQL
+        ↓
+   SQL Analytics
+```
+
 ---
 
-# Key Features
+## Key Features
 
-## 1. REST API
+### 1. Large-Scale Spark Processing
+
+The primary pipeline processes a 1-million-row transaction dataset using Apache Spark and PySpark.
+
+The Spark ETL process performs:
+
+- CSV ingestion using PySpark
+- Data cleaning
+- Data validation
+- Duplicate detection
+- Timestamp conversion
+- Transaction date extraction
+- Transaction hour extraction
+- High-value transaction identification
+- Failed transaction identification
+- Parquet output
+- PostgreSQL loading using Spark JDBC
+
+### 2. REST API
 
 The project contains a Flask-based REST API that exposes payment transaction data.
-
-### Available endpoints
 
 #### Health Check
 
@@ -156,15 +159,11 @@ Example response:
 }
 ```
 
-This endpoint can be used to verify that the API service is running.
-
 #### Transaction Endpoint
 
 ```http
 GET /transactions
 ```
-
-The endpoint returns the available transaction records in JSON format.
 
 Example structure:
 
@@ -185,801 +184,646 @@ Example structure:
 }
 ```
 
----
+### 3. API Data Ingestion
 
-# 2. API Data Ingestion
-
-The `api_ingestion.py` module consumes the REST API using Python's `requests` library.
-
-The process is:
+The `api_ingestion.py` module consumes the Flask REST API using Python's `requests` library.
 
 ```text
 Flask API
     ↓
-HTTP GET request
+HTTP GET Request
     ↓
-JSON response
+JSON Response
     ↓
-Extract transactions
+Extract Transactions
     ↓
 Write CSV
 ```
 
-The retrieved data is stored in:
+The resulting API data is stored as:
 
 ```text
 data/raw/api_transactions.csv
 ```
 
-### Run API ingestion
+### 4. Data Validation
 
-```powershell
-python src/api_ingestion.py
-```
+The pipeline performs data-quality validation before loading transaction records.
 
-Expected output:
+Validation checks include:
 
-```text
-Downloaded 13 transactions from API.
-Saved to: C:\sachin\PYTHON\payment-data-pipeline\data\raw\api_transactions.csv
-```
+- Required fields
+- Transaction amount
+- Currency
+- Transaction status
+- Payment method
+- Missing values
+- Invalid transaction records
 
----
-
-# 3. Data Quality Validation
-
-The pipeline does not assume that every incoming transaction is valid.
-
-The validation layer checks transaction records before they are used for downstream processing.
-
-Examples of data-quality issues handled include:
-
-- Missing transaction information
-- Invalid transaction amounts
-- Duplicate transactions
-- Rejected records
-
-The current dataset contains 13 raw records.
-
-After duplicate detection:
+Supported currencies:
 
 ```text
-13 raw records
-      ↓
-12 unique records
-      ↓
-1 duplicate
+INR
+USD
+EUR
 ```
 
-After validation:
+Supported statuses:
 
 ```text
-12 unique records
-      ↓
-10 valid records
-      ↓
-2 rejected records
+SUCCESS
+FAILED
 ```
 
-This provides a basic but practical data-quality workflow.
-
----
-
-# 4. Duplicate Detection
-
-Duplicate records are identified before the final dataset is stored.
-
-Current execution result:
+Supported payment methods:
 
 ```text
-Raw records       : 13
-Unique records    : 12
-Duplicates        : 1
-Valid records     : 10
-Rejected records  : 2
+CARD
+UPI
+NETBANKING
 ```
 
-The objective is to prevent duplicate transactions from contaminating downstream analytical results.
+### 5. Duplicate Detection
 
----
+Duplicate transaction records are identified using the transaction ID.
 
-# 5. Rejected Records
+The pipeline ensures that transaction IDs remain unique in the processed dataset.
 
-Invalid records are not silently ignored.
+The large-scale Spark pipeline also performs deduplication before the processed data is written to Parquet.
 
-Rejected records can be stored separately under:
+### 6. Data Transformation
+
+The pipeline transforms raw transaction data into an analytics-ready format.
+
+Transformations include:
+
+- Converting transaction amounts to numeric values
+- Parsing transaction timestamps
+- Creating transaction dates
+- Extracting transaction hours
+- Identifying high-value transactions
+- Identifying failed transactions
+
+The large-scale Spark pipeline produces:
 
 ```text
-data/bad_records/
+transaction_date
+transaction_hour
+is_high_value
+is_failed
 ```
 
-This allows problematic input data to be inspected independently from the clean dataset.
-
-A production-grade system could later extend this mechanism with:
-
-- Rejection reasons
-- Error categories
-- Retry mechanisms
-- Data-quality reports
-- Reprocessing workflows
-
----
-
-# 6. PySpark ETL
-
-Apache Spark is used for the transformation stage.
-
-The project uses **PySpark** to demonstrate scalable data processing.
-
-The Spark transformation includes:
-
-- Reading transaction data
-- Processing transaction records
-- Applying transformations
-- Counting output records
-- Writing processed results
-
-The Spark environment is containerized using Docker.
-
-## Run PySpark
-
-Execute:
-
-```powershell
-docker exec -it payment-spark /opt/spark/bin/spark-submit /opt/project/src/spark_transform.py
-```
-
-Successful execution produces:
+A transaction is considered high-value when:
 
 ```text
-Output rows: 10
+amount >= 10000
 ```
 
-The Spark application also finishes with:
+### 7. Large-Scale PySpark ETL
 
 ```text
-SparkContext is stopping with exitCode 0
+transactions_1m.csv
+        ↓
+Spark CSV Reader
+        ↓
+Data Cleaning
+        ↓
+Validation
+        ↓
+Deduplication
+        ↓
+Transformation
+        ↓
+Parquet
 ```
 
-`exitCode 0` indicates that the Spark job completed successfully.
-
----
-
-# 7. PostgreSQL Data Warehouse
-
-PostgreSQL is used as the persistent database for processed payment transactions.
-
-The database runs inside a Docker container.
+Implementation:
 
 ```text
-Docker
-   │
-   └── PostgreSQL
-          │
-          └── payments
-                 │
-                 └── transactions
+src/spark_large_transform.py
 ```
 
-### Database configuration
+Output:
 
 ```text
-Database : payments
-User     : admin
-Port     : 5432
+data/processed/transactions_1m/
 ```
 
-## Connect to PostgreSQL
+### 8. PostgreSQL Data Storage
+
+PostgreSQL is used as the relational database for storing processed transaction data.
+
+The project uses two tables:
+
+```text
+transactions
+```
+
+Used by the original Python/API pipeline.
+
+```text
+transactions_1m
+```
+
+Used by the large-scale Spark pipeline.
+
+### 9. Spark JDBC Loading
+
+The large-scale processed Parquet dataset is loaded into PostgreSQL using Spark JDBC.
+
+Implementation:
+
+```text
+src/load_to_postgres.py
+```
 
 Run:
 
-```powershell
-docker exec -it payment-postgres psql -U admin -d payments
+```bash
+docker exec payment-spark sh -c "mkdir -p /tmp/.ivy2 && /opt/spark/bin/spark-submit --conf spark.jars.ivy=/tmp/.ivy2 --packages org.postgresql:postgresql:42.7.4 /opt/project/src/load_to_postgres.py"
 ```
 
-Then verify the records:
+### 10. SQL Analytics
 
-```sql
-SELECT COUNT(*) FROM transactions;
-```
-
-Expected result:
-
-```text
- count
--------
-    10
-```
-
-This confirms that the processed transaction records have been loaded into PostgreSQL.
-
-Exit PostgreSQL:
-
-```sql
-\q
-```
-
----
-
-# 8. SQL Analytics
-
-Once the transaction data is available in PostgreSQL, SQL can be used to perform analytical operations.
-
-## Total transaction count
+#### Total Transactions
 
 ```sql
 SELECT COUNT(*) AS total_transactions
-FROM transactions;
+FROM transactions_1m;
 ```
 
-## Transactions by status
+#### Total Transaction Amount
+
+```sql
+SELECT SUM(amount) AS total_amount
+FROM transactions_1m;
+```
+
+#### Average Transaction Amount
+
+```sql
+SELECT AVG(amount) AS average_amount
+FROM transactions_1m;
+```
+
+#### Transactions by Status
 
 ```sql
 SELECT
     status,
-    COUNT(*) AS transaction_count,
-    SUM(amount) AS total_amount
-FROM transactions
+    COUNT(*) AS transaction_count
+FROM transactions_1m
 GROUP BY status;
 ```
 
-This provides information about successful and failed transactions.
-
-## Merchant-level analysis
+#### Transactions by Payment Method
 
 ```sql
 SELECT
-    merchant_id,
+    payment_method,
     COUNT(*) AS transaction_count,
     SUM(amount) AS total_amount
-FROM transactions
-GROUP BY merchant_id
+FROM transactions_1m
+GROUP BY payment_method
 ORDER BY total_amount DESC;
 ```
 
-This can be used to identify merchants with the highest transaction volume or value.
-
-## Location-level analysis
+#### Transactions by Location
 
 ```sql
 SELECT
     location,
     COUNT(*) AS transaction_count,
     SUM(amount) AS total_amount
-FROM transactions
+FROM transactions_1m
 GROUP BY location
 ORDER BY total_amount DESC;
 ```
 
-This allows transaction activity to be analyzed by location.
+#### Failed Transactions
+
+```sql
+SELECT COUNT(*) AS failed_transactions
+FROM transactions_1m
+WHERE is_failed = TRUE;
+```
+
+#### High-Value Transactions
+
+```sql
+SELECT COUNT(*) AS high_value_transactions
+FROM transactions_1m
+WHERE is_high_value = TRUE;
+```
 
 ---
 
-# 9. Automated Testing
+## Large-Scale Pipeline Results
+
+The large-scale pipeline successfully processed the generated transaction dataset and loaded the processed records into PostgreSQL.
+
+| Metric | Result |
+|---|---:|
+| PostgreSQL rows | 994,997 |
+| Unique transaction IDs | 994,997 |
+| Invalid amounts | 0 |
+| Null transaction IDs | 0 |
+| Null customer IDs | 0 |
+| Null timestamps | 0 |
+| SUCCESS transactions | 945,183 |
+| FAILED transactions | 49,814 |
+| Minimum amount | 50.06 |
+| Maximum amount | 49,999.96 |
+| Average amount | 25,013.05 |
+| High-value transactions | 796,496 |
+| Failed transactions | 49,814 |
+| Total transaction amount | 24,887,907,584.38 |
+
+### Payment Method Distribution
+
+| Payment Method | Transactions |
+|---|---:|
+| CARD | 249,659 |
+| UPI | 248,618 |
+| WALLET | 248,207 |
+| NET_BANKING | 248,513 |
+
+---
+
+## Testing
 
 The project uses **PyTest** for automated testing.
 
-Run:
+Tests are located in:
 
-```powershell
-pytest -q
+```text
+tests/
 ```
 
-Current result:
+Run:
+
+```bash
+pytest
+```
+
+Expected result:
 
 ```text
 4 passed
 ```
 
-Automated testing helps ensure that expected pipeline behavior remains correct when the implementation changes.
-
-Testing is especially useful for:
-
-- Data validation
-- Transformation logic
-- Utility functions
-- Expected pipeline behavior
-
 ---
 
-# 10. Logging
+## Docker
 
-The project uses Python's `logging` module for pipeline visibility and debugging.
-
-Example:
-
-```python
-logging.info("Reading raw transactions from %s", path)
-```
-
-Logs are maintained under:
+Docker provides the project infrastructure.
 
 ```text
-logs/
+Docker Compose
+      │
+      ├── PostgreSQL
+      │
+      └── Spark
 ```
 
-Logging helps identify:
+Start:
 
-- Which pipeline stage is executing
-- Which input is being processed
-- Where failures occur
-- Whether expected processing steps were reached
+```bash
+docker compose up -d
+```
+
+Check containers:
+
+```bash
+docker ps
+```
+
+Stop:
+
+```bash
+docker compose down
+```
 
 ---
 
-# 11. Docker Infrastructure
-
-Docker is used to provide reproducible infrastructure for the project.
-
-Current containers:
-
-```text
-┌───────────────────────────────┐
-│            Docker             │
-│                               │
-│  ┌─────────────────────────┐  │
-│  │    payment-postgres     │  │
-│  │      PostgreSQL 16      │  │
-│  └─────────────────────────┘  │
-│                               │
-│  ┌─────────────────────────┐  │
-│  │      payment-spark      │  │
-│  │       Spark 3.5.9       │  │
-│  └─────────────────────────┘  │
-│                               │
-└───────────────────────────────┘
-```
-
-Docker also avoids the need to configure a complete local Hadoop environment on Windows for the Spark execution.
-
----
-
-# Project Structure
+## Project Structure
 
 ```text
 payment-data-pipeline/
 │
 ├── data/
-│   │
 │   ├── raw/
 │   │   ├── transactions.csv
-│   │   └── api_transactions.csv
+│   │   └── transactions_1m.csv
 │   │
-│   ├── processed/
-│   │   └── transactions_processed.csv
-│   │
-│   └── bad_records/
-│
-├── logs/
-│   └── pipeline.log
-│
-├── sql/
-│   └── SQL analytics scripts
+│   └── processed/
+│       └── transactions_1m/
 │
 ├── src/
 │   ├── api.py
 │   ├── api_ingestion.py
 │   ├── ingestion.py
+│   ├── validation.py
+│   ├── transformation.py
+│   ├── loader.py
 │   ├── pipeline.py
-│   └── spark_transform.py
+│   ├── spark_transform.py
+│   ├── spark_large_transform.py
+│   └── load_to_postgres.py
 │
 ├── tests/
-│   └── test files
+│   └── test_validation.py
 │
 ├── docker-compose.yml
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
----
+### Important Files
 
-# Technology Stack
-
-| Technology | Role |
+| File | Purpose |
 |---|---|
-| **Python** | Pipeline logic, validation and ingestion |
-| **Flask** | REST API |
-| **Requests** | API consumption |
-| **PySpark** | ETL and data transformation |
-| **PostgreSQL** | Persistent transaction storage |
-| **SQL** | Analytics and database validation |
-| **Docker** | Containerized infrastructure |
-| **PyTest** | Automated testing |
-| **Logging** | Debugging and execution monitoring |
-| **CSV** | Raw/intermediate data storage |
-| **Git** | Version control |
+| `api.py` | Flask REST API |
+| `api_ingestion.py` | API-based transaction ingestion |
+| `ingestion.py` | CSV ingestion utilities |
+| `validation.py` | Transaction validation |
+| `transformation.py` | Transaction transformation |
+| `pipeline.py` | Original Python pipeline |
+| `spark_transform.py` | Spark processing for the original workflow |
+| `spark_large_transform.py` | Large-scale 1M-row Spark ETL |
+| `load_to_postgres.py` | Spark JDBC PostgreSQL loader |
+| `loader.py` | PostgreSQL loader for the original pipeline |
+| `test_validation.py` | PyTest validation tests |
+| `docker-compose.yml` | Spark and PostgreSQL infrastructure |
 
 ---
 
-# Installation & Setup
+## Dataset
 
-## Prerequisites
+The project contains a smaller transaction dataset for the API/Python workflow and a larger synthetic transaction dataset for Spark processing.
 
-Install:
-
-- Python 3.10+
-- Docker Desktop
-- Git
-
-Verify Python:
-
-```powershell
-python --version
-```
-
-Verify Docker:
-
-```powershell
-docker --version
-```
-
-Verify Docker Compose:
-
-```powershell
-docker compose version
-```
-
----
-
-# Setup
-
-## 1. Clone the repository
-
-```powershell
-git clone https://github.com/sachin23052005/Payment-Transaction-Data-Engineering-Analytics-Pipeline.git
-```
-
-Navigate into the project:
-
-```powershell
-cd Payment-Transaction-Data-Engineering-Analytics-Pipeline
-```
-
----
-
-## 2. Create a Python virtual environment
-
-```powershell
-python -m venv .venv
-```
-
-Activate it:
-
-```powershell
-.venv\Scripts\Activate.ps1
-```
-
-If using Command Prompt:
-
-```cmd
-.venv\Scripts\activate
-```
-
----
-
-## 3. Install dependencies
-
-```powershell
-pip install -r requirements.txt
-```
-
----
-
-# Start Docker Services
-
-From the project root:
-
-```powershell
-docker compose up -d
-```
-
-Check running containers:
-
-```powershell
-docker ps
-```
-
-Expected services:
+The large dataset contains approximately:
 
 ```text
-payment-postgres
-payment-spark
+1,000,000 transaction records
 ```
 
+Schema:
+
+```text
+transaction_id
+customer_id
+merchant_id
+amount
+currency
+timestamp
+location
+payment_method
+status
+```
+
+The large generated dataset is excluded from Git because of its size.
+
 ---
 
-# ▶Running the Complete Pipeline
+## Running the Project
 
-The pipeline should be executed in the following order.
+### Option 1 — Original API/Python Pipeline
 
----
+Start PostgreSQL:
 
-## Step 1 — Start the Flask API
+```bash
+docker compose up -d postgres
+```
 
-Open Terminal 1:
+Start the Flask API:
 
-```powershell
+```bash
 python src/api.py
 ```
 
-Keep this terminal running.
-
-The API should be available at:
+API URL:
 
 ```text
 http://127.0.0.1:5000
 ```
 
----
+Ingest API data:
 
-## Step 2 — Consume the API
-
-Open Terminal 2:
-
-```powershell
+```bash
 python src/api_ingestion.py
 ```
 
-Expected:
+Run the Python pipeline:
 
-```text
-Downloaded 13 transactions from API.
-Saved to:
-...\data\raw\api_transactions.csv
-```
-
----
-
-## Step 3 — Run the Python pipeline
-
-```powershell
+```bash
 python src/pipeline.py
 ```
 
-Expected:
+Run tests:
 
-```text
-Data successfully loaded into PostgreSQL.
-Pipeline completed successfully.
-
-Raw records       : 13
-Unique records    : 12
-Duplicates        : 1
-Valid records     : 10
-Rejected records  : 2
+```bash
+pytest
 ```
 
----
+### Option 2 — Large-Scale Spark Pipeline
 
-## Step 4 — Run PySpark
+Start Docker:
 
-```powershell
-docker exec -it payment-spark /opt/spark/bin/spark-submit /opt/project/src/spark_transform.py
+```bash
+docker compose up -d
 ```
 
-Expected:
+Verify:
 
-```text
-Output rows: 10
-```
-
-A successful Spark shutdown includes:
-
-```text
-SparkContext is stopping with exitCode 0
-```
-
----
-
-## Step 5 — Verify PostgreSQL
-
-```powershell
-docker exec -it payment-postgres psql -U admin -d payments
-```
-
-Run:
-
-```sql
-SELECT COUNT(*) FROM transactions;
-```
-
-Expected:
-
-```text
- count
--------
-    10
-```
-
-Exit:
-
-```sql
-\q
-```
-
----
-
-## Step 6 — Run automated tests
-
-```powershell
-pytest -q
-```
-
-Expected:
-
-```text
-4 passed
-```
-
----
-
-# Verified Pipeline Results
-
-The current implementation has been executed successfully with the following results:
-
-| Metric | Result |
-|---|---:|
-| Raw records | 13 |
-| Unique records | 12 |
-| Duplicate records | 1 |
-| Valid records | 10 |
-| Rejected records | 2 |
-| PySpark output rows | 10 |
-| PostgreSQL records | 10 |
-| Automated tests | 4 passed |
-
-The complete data path is:
-
-```text
-13 API records
-      ↓
-12 unique records
-      ↓
-10 valid records
-      ↓
-PySpark
-      ↓
-10 output rows
-      ↓
-PostgreSQL
-      ↓
-10 stored records
-      ↓
-4 automated tests passed
-```
-
----
-
-#  Data Quality Example
-
-The pipeline demonstrates a basic data-quality workflow:
-
-```text
-Incoming Data
-     │
-     │ 13 records
-     ▼
-Duplicate Detection
-     │
-     │ 1 duplicate
-     ▼
-12 Unique Records
-     │
-     ▼
-Validation
-     │
-     ├───────────────┐
-     ▼               ▼
-10 Valid         2 Rejected
-     │
-     ▼
-PySpark Processing
-     │
-     ▼
-PostgreSQL
-```
-
-This prevents invalid and duplicate data from directly entering the analytical dataset.
-
----
-
-# Testing Strategy
-
-The project uses automated tests to validate expected behavior.
-
-Run all tests with:
-
-```powershell
-pytest -q
-```
-
-Current status:
-
-```text
-4 passed
-```
-
-The testing layer provides a safety net when modifying ingestion, validation, or transformation logic.
-
----
-
-# Debugging
-
-When troubleshooting the project, useful commands include:
-
-### Check Docker containers
-
-```powershell
+```bash
 docker ps
 ```
 
-### Check PostgreSQL logs
+Run Spark ETL:
 
-```powershell
-docker logs payment-postgres
+```bash
+docker exec -it payment-spark /opt/spark/bin/spark-submit /opt/project/src/spark_large_transform.py
 ```
 
-### Check Spark container
-
-```powershell
-docker logs payment-spark
-```
-
-### Run tests
-
-```powershell
-pytest -q
-```
-
-### Check PySpark version
-
-```powershell
-python -c "import pyspark; print(pyspark.__version__)"
-```
-
----
-
-  # Summary
-
-This project demonstrates an end-to-end payment transaction data engineering workflow:
+Output:
 
 ```text
-                  ┌─────────────┐
-                  │ REST API    │
-                  └──────┬──────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │ Python      │
-                  │ Ingestion   │
-                  └──────┬──────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │ Data        │
-                  │ Quality     │
-                  └──────┬──────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │ PySpark     │
-                  │ ETL         │
-                  └──────┬──────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │ PostgreSQL  │
-                  └──────┬──────┘
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │ SQL         │
-                  │ Analytics   │
-                  └─────────────┘
-
-             Docker | PyTest | Logging | Git
+data/processed/transactions_1m/
 ```
 
-The pipeline has been executed end-to-end and verified with successful API ingestion, data-quality processing, PySpark execution, PostgreSQL loading, and automated tests.
+Load into PostgreSQL:
+
+```bash
+docker exec payment-spark sh -c "mkdir -p /tmp/.ivy2 && /opt/spark/bin/spark-submit --conf spark.jars.ivy=/tmp/.ivy2 --packages org.postgresql:postgresql:42.7.4 /opt/project/src/load_to_postgres.py"
+```
+
+Connect to PostgreSQL:
+
+```bash
+docker exec -it payment-postgres psql -U admin -d payments
+```
+
+Verify:
+
+```sql
+SELECT COUNT(*)
+FROM transactions_1m;
+```
+
+Expected:
+
+```text
+994997
+```
 
 ---
+
+## Data Processing Pipeline Summary
+
+```text
+                    Raw CSV
+                       │
+                       ▼
+                 Apache Spark
+                       │
+                       ▼
+               Data Cleaning
+                       │
+                       ▼
+                 Validation
+                       │
+                       ▼
+               Deduplication
+                       │
+                       ▼
+               Transformation
+                       │
+                       ▼
+                   Parquet
+                       │
+                       ▼
+                 Spark JDBC
+                       │
+                       ▼
+                  PostgreSQL
+                       │
+                       ▼
+                 SQL Analytics
+```
+
+---
+
+## Data Quality Workflow
+
+```text
+Raw Transactions
+       │
+       ▼
+Required Field Validation
+       │
+       ▼
+Amount Validation
+       │
+       ▼
+Currency Validation
+       │
+       ▼
+Status Validation
+       │
+       ▼
+Payment Method Validation
+       │
+       ▼
+Duplicate Detection
+       │
+       ▼
+Clean Transaction Dataset
+```
+
+---
+
+## Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| Python | Pipeline logic and data processing |
+| Flask | REST API |
+| Requests | API data ingestion |
+| PySpark | Distributed ETL processing |
+| Apache Spark | Large-scale data processing |
+| Parquet | Processed data storage |
+| PostgreSQL | Relational database |
+| Spark JDBC | Spark-to-PostgreSQL data loading |
+| SQL | Data analytics |
+| Docker | Infrastructure and environment |
+| PyTest | Automated testing |
+| Git | Version control |
+
+---
+
+## Engineering Practices
+
+The project demonstrates:
+
+- ETL pipeline design
+- Data validation
+- Data quality checks
+- Duplicate detection
+- Distributed data processing
+- Large-scale CSV processing
+- Parquet-based data storage
+- JDBC database integration
+- SQL analytics
+- API-based ingestion
+- Automated testing
+- Docker-based infrastructure
+- Structured pipeline components
+- Version control using Git
+
+---
+
+## Future Improvements
+
+Potential future improvements include:
+
+- Cloud deployment
+- Incremental data processing
+- Pipeline orchestration
+- Automated CI/CD
+- Advanced data-quality monitoring
+- Database indexing optimization
+- Additional analytical dashboards
+- Production-grade configuration and secret management
+- Performance benchmarking with larger datasets
+
+---
+
+## Conclusion
+
+The **Payment Transaction Data Engineering & Analytics Pipeline** demonstrates an end-to-end data engineering workflow for payment transaction data.
+
+The project combines a Python/Flask API-based pipeline with a scalable Apache Spark pipeline capable of processing approximately 1 million transaction records.
+
+The primary scalable workflow demonstrates:
+
+```text
+CSV
+ ↓
+PySpark
+ ↓
+Data Cleaning & Validation
+ ↓
+Transformation
+ ↓
+Parquet
+ ↓
+Spark JDBC
+ ↓
+PostgreSQL
+ ↓
+SQL Analytics
+```
+
+The project provides practical experience with data ingestion, ETL, data quality, distributed processing, analytical storage, database integration, testing, Docker, and SQL-based analytics.
